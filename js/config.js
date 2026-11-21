@@ -1,0 +1,2 @@
+// Satu-satunya nilai konfigurasi di frontend: URL Web App Apps Script (bukan rahasia).
+window.MYHOMS_API = 'https://script.google.com/macros/s/AKfycbzTdDqWvkM2IEspfFl-BHQnPx-tZCM5Ty8kV7JpG5odLYQOl49M9fM19PjbtwupBIpDTw/exec';

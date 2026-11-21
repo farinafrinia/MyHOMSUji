@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#121A24">
+  <title>MY HOMS — My HOMS, My Responsibility</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..500,0..1,0&icon_names=account_circle,account_tree,add,add_a_photo,add_circle,add_location_alt,add_photo_alternate,add_task,admin_panel_settings,alarm,analytics,apartment,approval,arrow_back,arrow_downward,arrow_drop_down_circle,arrow_forward,arrow_upward,assignment,assignment_late,attach_file,auto_awesome,auto_fix_high,backup,badge,bar_chart,block,build_circle,calendar_month,calendar_today,campaign,cancel,celebration,chat,check,check_box,check_circle,checklist,chevron_left,chevron_right,chips,circle,clinical_notes,close,cloud_done,cloud_off,cloud_upload,commit,content_copy,contrast,corporate_fare,dangerous,dark_mode,dashboard,database,date_range,delete,description,docs,domain,done,done_all,donut_large,download,draft,drag_indicator,draw,dropdown,dry,dynamic_form,eco,edit,edit_calendar,edit_document,edit_note,email,emergency,engineering,error,event,event_busy,event_repeat,eyebrow,fact_check,filter_alt,filter_alt_off,flag,forum,functions,gavel,gpp_bad,grading,grid_on,group,group_add,groups,hd,health_and_safety,health_metrics,help,hide,history,home,hourglass_top,how_to_reg,image,inbox,info,input,insights,inventory_2,key,label,leaderboard,light,light_mode,link,list,list_alt,local_fire_department,local_hospital,location_off,location_on,lock,lock_open,lock_reset,login,logout,mail,manage_accounts,map,medical_services,menu,menu_book,mode,monitor_heart,monitoring,mp,note,notes,notifications,notifications_active,notifications_off,open_in_full,outbox,password,pattern,payments,pending,percent,person,person_add,person_alert,person_check,person_off,person_remove,person_search,personal_injury,phone,photo_camera,picture_as_pdf,pin,play_arrow,playlist_add,policy,print,priority_high,publish,query_stats,quiz,radio,radio_button_checked,radio_button_unchecked,rate_review,refresh,replay,restart_alt,rule,save,schedule,school,score,script,search,search_off,segment,select,select_all,send,shield,shift,short_text,sick,signal_cellular_alt,signal_cellular_connected_no_internet_0_bar,smartphone,sort,speed,star,start,summarize,supervisor_account,support_agent,swap_horiz,switch,sync,table_chart,tabs,tag,target,task_alt,timeline,trending_up,troubleshoot,tune,undo,upload,upload_file,verified,verified_user,visibility,warning,workspace_premium,zoom_in&display=block" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+</head>
+<body>
+  <!-- Layar awal: tampil < 1 detik; aplikasi dirender dari cache lokal bila sesi masih berlaku -->
+  <div id="boot"><img id="bootLogo" alt="MY HOMS"><div class="spin" style="color:#F26522;width:22px;height:22px"></div><div class="small">Memuat MY HOMS…</div></div>
+
+  <div id="login"></div>
+
+  <div id="app" class="app">
+    <aside id="sb" class="sb" aria-label="Navigasi utama">
+      <div class="sb-hd"><div class="emb"><img id="sbLogo" alt="MY HOMS"></div><div class="wm-box"><div class="wm">MY <b>HOMS</b></div><div class="wm-s">SHEC Enterprise</div></div></div>
+      <div id="sbSite" class="sb-site"></div>
+      <nav id="sbNav" class="sb-nav"></nav>
+      <div class="sb-ft"><div class="sync"><i id="netDot" class="dot"></i><span id="netTxt">Online · Auto-Sync</span></div>
+        <div class="xs" style="color:#6F7D92;margin-top:10px;text-align:center">MY HOMS, MY RESPONSIBILITY</div></div>
+    </aside>
+    <div id="scrim" class="scrim"></div>
+    <div class="main">
+      <header class="top">
+        <button class="ib-btn" id="btnMenu" aria-label="Buka menu"><span class="ms">menu</span></button>
+        <div class="grow"><div id="topTitle" class="ttl">MY HOMS</div><div id="topCrumb" class="crumb"></div></div>
+        <div id="topScope" class="pill outline lc hide-m"></div>
+        <button class="ib-btn hide-m" id="btnTheme" aria-label="Ganti tema"><span class="ms">dark_mode</span></button>
+        <button class="ib-btn" id="btnBell" aria-label="Notifikasi"><span class="ms">notifications</span><span id="bellBdg" class="bdg hide">0</span></button>
+        <div class="who" id="btnWho"><div><div id="whoNm" class="nm"></div><div id="whoRl" class="rl"></div></div><div id="whoAv" class="av"></div></div>
+      </header>
+      <div id="netBar" class="offline hide"><span class="ms">signal_cellular_connected_no_internet_0_bar</span><span id="netBarTxt">Sinyal lemah — data aman sebagai draft di perangkat dan dikirim otomatis saat tersambung.</span></div>
+      <div id="urgent" class="urgent hide"></div>
+      <main id="view" class="view" tabindex="-1"></main>
+    </div>
+    <nav id="bn" class="bn" aria-label="Navigasi bawah"></nav>
+  </div>
+
+  <div id="toasts" aria-live="polite"></div>
+  <div id="modals"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js" defer></script>
+  <script>
+  (function () {
+    var errs = [];
+    window.addEventListener('error', function (e) { try { errs.push((e.message || 'Galat') + (e.filename ? ' @ ' + String(e.filename).split('/').pop() + ':' + e.lineno : '')); } catch (x) { } });
+    window.addEventListener('unhandledrejection', function (e) { try { errs.push('Promise: ' + (e.reason && e.reason.message ? e.reason.message : e.reason)); } catch (x) { } });
+    window.__bootGuard = errs;
+    setTimeout(function () {
+      var b = document.getElementById('boot'); if (!b || b.className.indexOf('out') >= 0 || !b.parentNode) return;
+      var d = document.createElement('div'); d.style.cssText = 'max-width:520px;margin:6px 16px 0;text-align:center;font:13px/1.5 system-ui,sans-serif;color:#c9d3e1';
+      var esc = function (t) { return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+      var sus = [];
+      try {
+        if (errs.join(' ').indexOf('SyntaxError') >= 0) {
+          var ss = document.getElementsByTagName('script');
+          for (var i = 0; i < ss.length && sus.length < 5; i++) {
+            var tx = ss[i].text || ''; if (tx.length < 3000) continue; var L = tx.split('\n');
+            for (var j = 0; j < L.length && sus.length < 5; j++) {
+              var ln = L[j]; var tl = ln.replace(/^\s+/, ''); if (ln.length < 3 || tl.indexOf('/' + '*') === 0 || tl.indexOf('*') === 0 || tl.indexOf('//') === 0) continue;
+              try { new Function(ln); } catch (x) {
+                if (String(x.message) === 'Invalid or unexpected token') {
+                  var odd = []; for (var k = 0; k < ln.length && odd.length < 6; k++) { var c = ln.charCodeAt(k); if (c > 126 || (c < 32 && c !== 9 && c !== 13)) odd.push('U+' + ('0000' + c.toString(16).toUpperCase()).slice(-4) + '@' + k); }
+                  sus.push('baris ' + (j + 1) + ' [' + ln.length + ' huruf] ' + (odd.length ? 'karakter: ' + odd.join(',') + ' | ' : '') + ln.slice(0, 110));
+                }
+              }
+            }
+          }
+        }
+      } catch (x2) { sus.push('(pemeriksaan gagal: ' + x2.message + ')'); }
+      d.innerHTML = '<div style="font-weight:700;color:#fff;margin-bottom:6px">Pemuatan lebih lama dari biasanya</div><div>' + (errs.length ? 'Terdeteksi galat:<br><code style="color:#FFC7A8;word-break:break-word">' + esc(errs.slice(0, 3).join(' | ')) + '</code>' + (sus.length ? '<br><br>Baris mencurigakan:<br><code style="color:#FFC7A8;word-break:break-all;font-size:11px;display:block;text-align:left">' + esc(sus.join('\n')).replace(/\n/g, '<br>') + '</code>' : '') : 'Server belum menjawab. Tunggu sebentar atau coba muat ulang.') + '</div><div style="margin-top:12px"><button id="bgReload" style="height:36px;padding:0 14px;border-radius:8px;border:0;background:#F26522;color:#fff;font-weight:700;cursor:pointer">Muat ulang</button> <button id="bgClear" style="height:36px;padding:0 14px;border-radius:8px;border:1px solid #475569;background:transparent;color:#c9d3e1;font-weight:600;cursor:pointer">Hapus data lokal &amp; muat ulang</button></div>';
+      b.appendChild(d);
+      document.getElementById('bgReload').onclick = function () { location.reload(); };
+      document.getElementById('bgClear').onclick = function () { try { localStorage.clear(); } catch (x) { } try { sessionStorage.clear(); } catch (x) { } location.reload(); };
+    }, (window.__BOOT_T || 12000));
+  })();
+  </script>
+  <script>
+  // Pengganti scriptlet server <?!= JSON.stringify(verif||'') ?>: dibaca dari ?v= di URL (link verifikasi QR dokumen).
+  (function () {
+    var raw = (new URLSearchParams(location.search).get('v') || '').toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 10);
+    window.__VERIF = raw.length === 10 ? raw.slice(0, 5) + '-' + raw.slice(5) : '';
+  })();
+  </script>
+  <script>
+  // Pengganti scriptlet server <?!= JSON.stringify(bukti||'') ?> (baru di v1.37.2): dibaca dari ?b= di URL
+  // (link bukti RTP dari ekspor Excel). Sanitasi sama seperti server: hanya karakter ID Drive, maks 80.
+  (function () {
+    window.__BUKTI = (new URLSearchParams(location.search).get('b') || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 80);
+  })();
+  </script>
+  <script src="./js/config.js"></script>
+  <script>
+  if (!window.MYHOMS_API || /GANTI_|XXXX/.test(window.MYHOMS_API)) {
+    document.addEventListener('DOMContentLoaded', function () {
+      var b = document.getElementById('boot'); if (b) b.innerHTML = '<div style="padding:16px;text-align:center;font:14px system-ui,sans-serif;color:#fff">Konfigurasi belum lengkap: isi <code>js/config.js</code> dengan URL Web App Apps Script Anda.</div>';
+    });
+  }
+  </script>
+  <script src="./js/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function (e) { console.error('SW gagal:', e); }); });
+    }
+  </script>
+</body>
+</html>
