@@ -91,7 +91,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 #boot { position: fixed; inset: 0; z-index: 9999; background: var(--navy); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; color: #c9d3e1; transition: opacity .25s; }
 #boot img { width: 120px; } #boot.out { opacity: 0; pointer-events: none; }
 .app { display: none; min-height: 100vh; } .app.on { display: block; }
-.sb { position: fixed; left: 0; top: 0; bottom: 0; width: var(--sb); background: var(--navy); color: #fff; display: flex; flex-direction: column; z-index: 60; transition: transform .25s ease; }
+.sb { position: fixed; left: 0; top: 0; bottom: 0; width: var(--sb); background: linear-gradient(165deg, #1E2A3C 0%, var(--navy) 50%, #0B1119 100%); color: #fff; display: flex; flex-direction: column; z-index: 60; transition: transform .25s ease; }
 .sb-hd { height: 76px; display: flex; align-items: center; gap: 12px; padding: 0 18px; border-bottom: 1px solid rgba(255,255,255,.07); }
 .emb { width: 44px; height: 44px; border-radius: 10px; background: #fff; display: grid; place-items: center; flex-shrink: 0; } .emb img { width: 36px; }
 .wm { font: 800 17px/1 var(--f-head); letter-spacing: -.01em; } .wm b { color: var(--orange); font-weight: 800; } .wm-s { font: 600 9px/12px var(--f-body); color: #8E9BB0; letter-spacing: .08em; text-transform: uppercase; margin-top: 3px; }
@@ -275,4 +275,3 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .verbar .small { color: rgba(255,255,255,.7); }
 @media (max-width: 600px) { .verbar { flex-wrap: wrap; bottom: 72px; } .verbar .grow { flex-basis: 100%; } }
 .dim{opacity:.55}
-
