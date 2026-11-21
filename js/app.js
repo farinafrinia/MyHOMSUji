@@ -555,6 +555,29 @@ const goAttr = (id, p) => `data-go="${id}" data-p='${esc(JSON.stringify(p || {})
 function openDrawer() { const sb = $('#sb'); if (window.innerWidth < 768) sb.classList.add('open'); else sb.classList.add('ex'); $('#scrim').classList.add('on'); }
 function closeDrawer() { $('#sb').classList.remove('open', 'ex'); $('#scrim').classList.remove('on'); }
 
+/* ── PWA: tombol kecil "Pasang aplikasi" di header (mirror app lain yang sudah punya tombol ini) ── */
+const PWA = {
+  ev: null,
+  standalone() { try { return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true; } catch (e) { return false; } },
+  isIosSafari() { const ua = navigator.userAgent; return /iphone|ipad|ipod/i.test(ua) && /safari/i.test(ua) && !/crios|fxios|edgios/i.test(ua); },
+  show() { const b = $('#btnInstall'); if (b) b.classList.remove('hide'); },
+  hide() { const b = $('#btnInstall'); if (b) b.classList.add('hide'); },
+  async prompt() {
+    if (this.ev) { this.ev.prompt(); try { await this.ev.userChoice; } catch (e) { } this.ev = null; this.hide(); return; }
+    if (this.isIosSafari()) {
+      confirmDlg({ title: 'Pasang MY HOMS di iPhone/iPad', ok: 'Mengerti', msg: 'Di iPhone/iPad, pemasangan dilakukan lewat Safari (bukan Chrome):<br><br>1. Ketuk ikon <b>Bagikan</b> (kotak dengan tanda panah ke atas) di bagian bawah Safari.<br>2. Gulir ke bawah, ketuk <b>"Tambahkan ke Layar Utama"</b>.<br>3. Ketuk <b>Tambah</b> di pojok kanan atas.' });
+      return;
+    }
+    confirmDlg({ title: 'Pasang MY HOMS', ok: 'Mengerti', msg: 'Buka menu browser (ikon titik tiga di pojok kanan atas), lalu pilih <b>"Instal aplikasi"</b> atau <b>"Tambahkan ke layar Utama"</b>.' });
+  },
+  init() {
+    if (this.standalone()) { this.hide(); return; }
+    window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); this.ev = e; this.show(); });
+    window.addEventListener('appinstalled', () => { this.ev = null; this.hide(); toast('MY HOMS terpasang di perangkat ini.', 'ok'); });
+    if (this.isIosSafari()) this.show();   // Safari iOS tidak memicu beforeinstallprompt — tampilkan tombol dengan instruksi manual
+  }
+};
+
 /* ── Shell: login, bootstrap, navigasi, polling ── */
 const Shell = {
   async init() {
@@ -564,7 +587,7 @@ const Shell = {
     const msOk = () => { if (msTest()) { document.documentElement.classList.add('ms-ok'); return true; } return false; };
     if (document.fonts && document.fonts.load) document.fonts.load('24px "Material Symbols Outlined"', 'home').then(msOk).catch(() => { });
     [800, 2500, 6000].forEach((t) => setTimeout(() => { if (!document.documentElement.classList.contains('ms-ok')) msOk(); }, t));
-    $('#btnMenu').onclick = openDrawer; $('#scrim').onclick = closeDrawer; $('#btnTheme').onclick = ACT.theme; $('#btnBell').onclick = () => go('notifikasi'); $('#btnWho').onclick = () => go('profil');
+    $('#btnMenu').onclick = openDrawer; $('#scrim').onclick = closeDrawer; $('#btnTheme').onclick = ACT.theme; $('#btnBell').onclick = () => go('notifikasi'); $('#btnWho').onclick = () => go('profil'); $('#btnInstall').onclick = () => PWA.prompt();
     if (window.__VERIF) { this.hideBoot(); return Verif.render(window.__VERIF); }
     LS.del('auth'); const a = SS.get('auth');   // bersihkan sisa token versi lama yang dipakai bersama antar-tab
     if (a && a.token && a.exp > Date.now() + 60000) {
@@ -702,7 +725,7 @@ function bindPinForm(oldPin, done) {
   $('#pBtn').onclick = async () => { const b = $('#pBtn'); b.classList.add('is-busy'); try { await API.run('auth.changePin', { oldPin: oldPin || $('#pOld').value, newPin: $('#pNew').value }); toast('PIN berhasil diganti.', 'ok'); done(); } catch (e) { toast(e.message, 'bad'); b.classList.remove('is-busy'); } };
 }
 
-window.addEventListener('DOMContentLoaded', () => { Shell.init(); Ver.start(); });
+window.addEventListener('DOMContentLoaded', () => { Shell.init(); Ver.start(); PWA.init(); });
 document.addEventListener('visibilitychange', () => { if (!document.hidden && S.token) { Outbox.flush(); if (Data.age('home') > 120000) API.run('home.get').then((h) => { Data.put('home', h); Urgent.paint(); }).catch(() => { }); } });
 
 /* ============================================================
